@@ -1,0 +1,24 @@
+FROM registry.access.redhat.com/ubi8/python-39:1
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN pip3 config set global.cert /etc/ssl/certs/ca-bundle.crt
+
+USER root
+
+# Add scripts
+COPY build/images/scripts/build.sh /usr/local/bin/build-python
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0.1/build/images/scripts/cache-build.sh /usr/local/bin/cache-build
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0.1/build/images/scripts/copy-build-if-cached.sh /usr/local/bin/copy-build-if-cached
+ADD https://raw.githubusercontent.com/opendevstack/ods-pipeline/v0.14.0.1/build/images/scripts/copy-artifacts.sh /usr/local/bin/copy-artifacts
+RUN chmod +x /usr/local/bin/build-python && \
+    chmod +x /usr/local/bin/cache-build && \
+    chmod +x /usr/local/bin/copy-build-if-cached && \
+    chmod +x /usr/local/bin/copy-artifacts
+
+VOLUME /workspace/source
+# Ensure that file permissions do not prevent Git checkout into workspace.
+# See https://git-scm.com/docs/git-config/#Documentation/git-config.txt-safedirectory.
+RUN git config --system --add safe.directory '/workspace/source'
+
+USER 1001
