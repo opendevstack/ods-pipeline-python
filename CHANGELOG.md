@@ -10,7 +10,7 @@ listed in the changelog.
 
 ## [Unreleased]
 
-## [0.1.0] - 2023-11-10
+## [0.1.0] - 2023-11-13
 
 Initial version.
 
